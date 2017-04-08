@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_modinstaller" default="compile.module.modinstaller">
+  <dirname property="module.modinstaller.basedir" file="${ant.file.module_modinstaller}"/>
+  
+  <property name="module.jdk.home.modinstaller" value="${jdk.home.1.7}"/>
+  <property name="module.jdk.bin.modinstaller" value="${jdk.bin.1.7}"/>
+  <property name="module.jdk.classpath.modinstaller" value="jdk.classpath.1.7"/>
+  
+  <property name="compiler.args.modinstaller" value="${compiler.args}"/>
+  
+  <property name="modinstaller.output.dir" value="${module.modinstaller.basedir}/out/production/ModInstaller"/>
+  <property name="modinstaller.testoutput.dir" value="${module.modinstaller.basedir}/out/test/ModInstaller"/>
+  
+  <path id="modinstaller.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="modinstaller.module.production.classpath">
+    <path refid="${module.jdk.classpath.modinstaller}"/>
+    <path refid="library.commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.org.apache.commons:commons-compress:1.9.classpath"/>
+    <path refid="library.org.tukaani:xz:1.5.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.3.1.classpath"/>
+  </path>
+  
+  <path id="modinstaller.runtime.production.module.classpath">
+    <pathelement location="${modinstaller.output.dir}"/>
+    <path refid="library.commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.org.apache.commons:commons-compress:1.9.classpath"/>
+    <path refid="library.org.tukaani:xz:1.5.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.3.1.classpath"/>
+  </path>
+  
+  <path id="modinstaller.module.classpath">
+    <path refid="${module.jdk.classpath.modinstaller}"/>
+    <pathelement location="${modinstaller.output.dir}"/>
+    <path refid="library.commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.org.apache.commons:commons-compress:1.9.classpath"/>
+    <path refid="library.org.tukaani:xz:1.5.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.3.1.classpath"/>
+  </path>
+  
+  <path id="modinstaller.runtime.module.classpath">
+    <pathelement location="${modinstaller.testoutput.dir}"/>
+    <pathelement location="${modinstaller.output.dir}"/>
+    <path refid="library.commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.org.apache.commons:commons-compress:1.9.classpath"/>
+    <path refid="library.org.tukaani:xz:1.5.classpath"/>
+    <path refid="library.com.google.code.gson:gson:2.3.1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.modinstaller">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.modinstaller">
+    <patternset refid="excluded.from.module.modinstaller"/>
+  </patternset>
+  
+  <path id="modinstaller.module.sourcepath">
+    <dirset dir="${module.modinstaller.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.modinstaller" depends="compile.module.modinstaller.production,compile.module.modinstaller.tests" description="Compile module ModInstaller"/>
+  
+  <target name="compile.module.modinstaller.production" depends="register.custom.compilers" description="Compile module ModInstaller; production classes">
+    <mkdir dir="${modinstaller.output.dir}"/>
+    <javac2 destdir="${modinstaller.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.modinstaller}/javac">
+      <compilerarg line="${compiler.args.modinstaller}"/>
+      <bootclasspath refid="modinstaller.module.bootclasspath"/>
+      <classpath refid="modinstaller.module.production.classpath"/>
+      <src refid="modinstaller.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.modinstaller"/>
+    </javac2>
+    
+    <copy todir="${modinstaller.output.dir}">
+      <fileset dir="${module.modinstaller.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.modinstaller.tests" depends="register.custom.compilers,compile.module.modinstaller.production" description="compile module ModInstaller; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.modinstaller" description="cleanup module">
+    <delete dir="${modinstaller.output.dir}"/>
+    <delete dir="${modinstaller.testoutput.dir}"/>
+  </target>
+</project>
